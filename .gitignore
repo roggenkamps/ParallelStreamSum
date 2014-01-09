@@ -1,0 +1,8 @@
+*.ho
+*.hi
+poker
+*#
+*~
+*.o
+.#*
+haskell/kata5
