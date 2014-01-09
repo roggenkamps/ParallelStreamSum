@@ -4,6 +4,7 @@
 --
 
 import Data.Char
+import GHC.Conc
 
 main :: IO ()
 main = do
@@ -13,7 +14,9 @@ main = do
 
 iter :: [Char] -> Int -> [[Char]]
 iter s 1 = analyzeString s
-iter s c = analyzeString s ++ iter s (c-1)
+iter s c = par x (pseq y (x ++ y ))
+           where x = analyzeString s  
+                 y = iter s (c-1)
 
 analyzeString :: [Char] -> [[Char]]
 analyzeString [] =  [[]]
