@@ -9,7 +9,7 @@ main :: IO ()
 
 main = do
   let inStr = "8745648184845171326578518184151512461752149647129746915414816354846454" in
-    iter inStr 100000
+    iter inStr 1000000
 
 iter :: [Char] -> Int -> IO ()
 iter s 1 = analyzeString s
