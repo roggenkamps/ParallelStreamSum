@@ -10,12 +10,12 @@ main :: IO ()
 main = do
   let inStr = "8745648184845171326578518184151512461752149647129746915414816354846454"
       count = 1000000 in
-    print (iter (map digitToInt inStr) count)
+      iter (map digitToInt inStr) count
 
-iter :: [Int] -> Int -> [[Int]]
-iter s 1 = analyzeString s
-iter s c = par x (pseq y (x ++ y ))
-           where x = analyzeString s  
+iter :: [Int] -> Int -> IO ()
+iter s 1 = print (analyzeString s)
+iter s c = par x y
+           where x = print (analyzeString s)
                  y = iter s (c-1)
 
 analyzeString :: [Int] -> [[Int]]
