@@ -14,9 +14,9 @@ main = do
 
 iter :: [Int] -> Int -> IO ()
 iter s 1 = print (analyzeString s)
-iter s c = par x y
-           where x = print (analyzeString s)
-                 y = iter s (c-1)
+iter s c = x `par` y
+           where x = analyzeString s
+                 y = [] `pseq` do (print x); iter s (c-1)
 
 analyzeString :: [Int] -> [[Int]]
 analyzeString [] =  [[]]
