@@ -4,7 +4,9 @@
 --
 
 import Data.Char
-import GHC.Conc
+import Control.Parallel
+import Control.Parallel.Strategies
+import Control.Exception
 
 main :: IO ()
 main = do
@@ -14,9 +16,9 @@ main = do
 
 iter :: [Int] -> Int -> IO ()
 iter s 1 = print (analyzeString s)
-iter s c = x `par` y
+iter s c = x `par` (do print x; y)
            where x = analyzeString s
-                 y = [] `pseq` do (print x); iter s (c-1)
+                 y = iter s (c-1)
 
 analyzeString :: [Int] -> [[Int]]
 analyzeString [] =  [[]]
