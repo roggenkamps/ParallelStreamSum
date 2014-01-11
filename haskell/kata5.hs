@@ -14,33 +14,50 @@ main = do
       count = 1000000 in
       iter (map digitToInt inStr) count
 
+data SeqData = Active { val:: Int, str::[Int] }
+             | Complete [Int]
+             | NoSeq
+
+data PData = PData { out :: [[Int]], seqs :: [SeqData] }
+
 iter :: [Int] -> Int -> IO ()
 iter s 1 = print (analyzeString s)
-iter s c = x `par` (do print x; y)
+iter s c = (do print x; y)
            where x = analyzeString s
                  y = iter s (c-1)
 
+completeSeq :: Int -> SeqData -> SeqData
+completeSeq i (Active {val=v, str=s} ) =
+   if v == i
+   then Complete (s++[i])
+   else if v > 9
+        then NoSeq
+        else Active { val = v+i, str=s++[i]}
+completeSeq i (Complete s) = Complete s
+completeSeq i NoSeq      = NoSeq
+
 analyzeString :: [Int] -> [[Int]]
 analyzeString [] =  [[]]
-analyzeString s =
-    let x = hasSum0 [] s in
-      if (fst x) /= [] then
-          [(fst x)] ++ analyzeString (tail s)
-      else
-        analyzeString (tail s)
+analyzeString s = out(foldl analyzeInt PData { out=[], seqs=[] } s)
 
-hasSum0 :: [Int] -> [Int] -> ([Int],[Int])
-hasSum0 [] [] = ([], [])
-hasSum0 s [s0] = ([], [])
-hasSum0 s (s0:s1:r) = hasSum (s0+s1) [s0,s1] r
+analyzeInt :: PData -> Int -> PData
+analyzeInt PData{ out=o, seqs=a } i  =
+  let x = map (completeSeq i) (a ++ [Active { val = 0, str = []}])
+  in
+   PData { out  = o++(map extractSeqs (filter filterP0 x)),
+           seqs = filter filterP1 x }
 
-hasSum :: Int -> [Int] -> [Int] -> ([Int],[Int])
-hasSum v s [] = ([],[])
-hasSum v s l = if v > 9
-               then ([],l)
-               else
-	         let x = head l in
-                   if  v == x
-                   then (s++[(head l)], tail(l))
-	  	   else hasSum (v+x) (s++[(head l)]) (tail l)
-                 
+extractSeqs :: SeqData -> [Int]
+extractSeqs (Active {val=_, str=_ }) = []
+extractSeqs (Complete x)      = x
+extractSeqs NoSeq             = []
+
+filterP0 :: SeqData -> Bool
+filterP0 (Active {val=_, str=_ }) = False
+filterP0 (Complete x)      = True
+filterP0 NoSeq             = False
+
+filterP1 :: SeqData -> Bool
+filterP1 (Active {val= _, str=_ }) = True
+filterP1 (Complete x)      = False
+filterP1 NoSeq             = False
