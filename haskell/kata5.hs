@@ -18,7 +18,7 @@ main = do
 
 analyzeString :: [Int] -> [[Int]]
 analyzeString [] =  [[]]
-analyzeString s = map fst (map (hasSum0 []) (tails s))
+analyzeString s = filter (\y -> not (null y)) (map (\x -> fst (hasSum0 [] x)) (tails s))
 --    let x = hasSum0 [] s in
 --      if (fst x) /= [] then
 --          [(fst x)] ++ analyzeString (tail s)
