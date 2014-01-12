@@ -4,16 +4,20 @@
 --
 
 import Data.Char
+import System.Environment
 
 main :: IO ()
 main = do
+  [cnt] <- getArgs 
   let inStr = "8745648184845171326578518184151512461752149647129746915414816354846454"
-      count = 1000000 in
-    print (iter (map digitToInt inStr) count)
+      count = read cnt
+      inInts = map digitToInt inStr
+    in
+      print (analyzeString (take count (cycle inInts)))
 
-iter :: [Int] -> Int -> [[Int]]
-iter s 1 = analyzeString s
-iter s c = analyzeString s ++ iter s (c-1)
+-- iter :: [Int] -> Int -> [[Int]]
+-- iter s 1 = analyzeString s
+-- iter s c = analyzeString s ++ iter s (c-1)
 
 analyzeString :: [Int] -> [[Int]]
 analyzeString [] =  [[]]
