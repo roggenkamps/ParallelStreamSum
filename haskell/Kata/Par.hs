@@ -8,11 +8,10 @@ module Kata.Par (
        where
 
 import Control.Exception
-import Control.Parallel
-import Control.Parallel.Strategies
+--import Control.Parallel
+--import Control.Parallel.Strategies
 import Data.Char
 import Data.Maybe
-
 
 data SeqData = SD { val:: Int, str::[Int] }
              | Out ([Int]) deriving (Show)

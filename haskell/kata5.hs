@@ -3,9 +3,13 @@
 -- Steve Roggenkamp
 --
 
+module Kata(main)
+       where
+
+
 import Control.Exception
-import Control.Parallel
-import Control.Parallel.Strategies
+--import Control.Parallel
+--import Control.Parallel.Strategies
 import Data.Char
 import Data.Maybe
 import System.Environment
