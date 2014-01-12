@@ -4,6 +4,7 @@
 --
 
 import Data.Char
+import Data.List
 import System.Environment
 
 main :: IO ()
@@ -15,18 +16,14 @@ main = do
     in
       print (analyzeString (take count (cycle inInts)))
 
--- iter :: [Int] -> Int -> [[Int]]
--- iter s 1 = analyzeString s
--- iter s c = analyzeString s ++ iter s (c-1)
-
 analyzeString :: [Int] -> [[Int]]
 analyzeString [] =  [[]]
-analyzeString s =
-    let x = hasSum0 [] s in
-      if (fst x) /= [] then
-          [(fst x)] ++ analyzeString (tail s)
-      else
-        analyzeString (tail s)
+analyzeString s = map fst (map (hasSum0 []) (tails s))
+--    let x = hasSum0 [] s in
+--      if (fst x) /= [] then
+--          [(fst x)] ++ analyzeString (tail s)
+--      else
+--        analyzeString (tail s)
 
 hasSum0 :: [Int] -> [Int] -> ([Int],[Int])
 hasSum0 [] [] = ([], [])
