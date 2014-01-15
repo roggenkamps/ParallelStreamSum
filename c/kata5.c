@@ -18,6 +18,7 @@ int analyzeDigits( uint8_t digit, struct state_data *sdata )
   int index = sdata->icount % MAXVALS;
   int startIndex = index;
   int i;
+  char out[10];
   uint8_t maxloop = (sdata->nactive < MAXVALS) ? sdata->nactive : MAXVALS;
   sdata->digits[index] = digit;
   sdata->values[index] = digit;
@@ -30,13 +31,16 @@ int analyzeDigits( uint8_t digit, struct state_data *sdata )
     if ( sdata->values[lindex] == digit ) {
       int v = digit;
       int j = lindex;
+      int k = 0;
       while ( v > 0 ) {
-	printf( "%d", sdata->digits[j]);
+	out[k]=sdata->digits[j]+'0';
 	j++;
+	k++;
 	if ( j >= MAXVALS ) { j += MAXVALS; }
 	v -= sdata->digits[j];
       }
-      printf( "%d\n", digit );
+      out[k] =0;
+      printf( "%s\n", out );
     }
     if ( sdata->values[lindex] != 255 ) {
       sdata->values[lindex] += digit;
