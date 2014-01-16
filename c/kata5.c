@@ -22,26 +22,27 @@ int val( uint64_t x, int i ) {
 
 int analyzeDigits( uint8_t digit, struct state_data *sdata )
 {
-  int v         = 0;
-  int      out  = 0;
+  int      v    = 0;
   uint64_t mask = 0;
   int      i;
+  int      shift;
   sdata->multiplier = (sdata->multiplier << 5) + 1;
   uint64_t delta = sdata->multiplier * digit;
   sdata->values  <<= 5;
   sdata->digits  = (sdata->digits << 5) + digit;
-  
+  shift = sdata->nactive*5;
+  mask = ((uint64_t)0x1f) << shift;
   for (i=sdata->nactive; i > 1; i-- ) {
-    if (((v = (sdata->values & (mask=(((uint64_t)0x1f) << (i*5)))) >> (i*5)) == digit )) {
+    if (((v = (sdata->values & (mask)) >> (shift)) == digit )) {
       int      ov = v;
       uint64_t m  = mask;
-      int      n  = i;
+      int      n  = shift;
       while ( ov >= 0 ) {
-	int d = (sdata->digits & m) >> (n*5);
+	int d = (sdata->digits & m) >> n;
 	sdata->outbuf[sdata->outsz++] = d + '0';
 	ov -= d;
 	m >>= 5;
-	n--;
+	n -= 5;
       }
       sdata->outbuf[sdata->outsz++] = '\n';
       if ( sdata->outsz > sizeof( sdata->outbuf ) - 32 ) {
@@ -49,12 +50,18 @@ int analyzeDigits( uint8_t digit, struct state_data *sdata )
 	sdata->outsz = 0;
       }
     }
+    mask >>= 5;
+    shift -= 5;
   }
   sdata->values += delta;
-  while ((v = (sdata->values & (mask=(((uint64_t)0x1f) << (sdata->nactive*5)))) >> (sdata->nactive*5)) > 9 ) {
-    sdata->values = sdata->values ^ (v << (sdata->nactive*5));
+  mask = ((uint64_t)0x1f) << (sdata->nactive*5);
+  shift = sdata->nactive*5;
+  while ((v = (sdata->values & mask) >> shift) > 9 ) {
+    sdata->values = sdata->values ^ (v << shift);
     sdata->digits = sdata->digits ^ (sdata->digits & mask);
     sdata->multiplier >>= 5;
+    mask >> 5;
+    shift -= 5;
     sdata->nactive--;
   }
   sdata->nactive++;
