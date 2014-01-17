@@ -22,7 +22,18 @@ int val( uint64_t x, int i ) {
 
 int analyzeDigits( uint8_t digit, struct state_data *sdata )
 {
-  int v         = 0;
+  static const uint64_t masks[] = { ((uint64_t) 0x1f) << 0,
+				    ((uint64_t) 0x1f) << 5,
+				    ((uint64_t) 0x1f) <<10,
+				    ((uint64_t) 0x1f) <<15,
+				    ((uint64_t) 0x1f) <<20,
+				    ((uint64_t) 0x1f) <<25,
+				    ((uint64_t) 0x1f) <<30,
+				    ((uint64_t) 0x1f) <<35,
+				    ((uint64_t) 0x1f) <<40,
+				    ((uint64_t) 0x1f) <<45
+  };
+  int      v    = 0;
   int      out  = 0;
   uint64_t mask = 0;
   int      i;
@@ -30,18 +41,18 @@ int analyzeDigits( uint8_t digit, struct state_data *sdata )
   uint64_t delta = sdata->multiplier * digit;
   sdata->values  <<= 5;
   sdata->digits  = (sdata->digits << 5) + digit;
-  
+  uint64_t delv = sdata->values ^ delta;
   for (i=sdata->nactive; i > 1; i-- ) {
-    if (((v = (sdata->values & (mask=(((uint64_t)0x1f) << (i*5)))) >> (i*5)) == digit )) {
-      int      ov = v;
-      uint64_t m  = mask;
+    uint64_t m  = masks[i];
+    /* uint64_t x= delv & m; */
+    if ( (uint64_t)(delv & m) == (uint64_t) 0 ) {
+      int      ov = (sdata->values & m) >> (i*5);
       int      n  = i;
       while ( ov >= 0 ) {
-	int d = (sdata->digits & m) >> (n*5);
-	sdata->outbuf[sdata->outsz++] = d + '0';
+	int d = (sdata->digits & m) >> (n--*5);
 	ov -= d;
+	sdata->outbuf[sdata->outsz++] = d + '0';
 	m >>= 5;
-	n--;
       }
       sdata->outbuf[sdata->outsz++] = '\n';
       if ( sdata->outsz > sizeof( sdata->outbuf ) - 32 ) {
@@ -51,7 +62,7 @@ int analyzeDigits( uint8_t digit, struct state_data *sdata )
     }
   }
   sdata->values += delta;
-  while ((v = (sdata->values & (mask=(((uint64_t)0x1f) << (sdata->nactive*5)))) >> (sdata->nactive*5)) > 9 ) {
+  while ((v = (sdata->values & masks[sdata->nactive]) >> (sdata->nactive*5)) > 9 ) {
     sdata->values = sdata->values ^ (v << (sdata->nactive*5));
     sdata->digits = sdata->digits ^ (sdata->digits & mask);
     sdata->multiplier >>= 5;
@@ -66,7 +77,8 @@ int main( int argc, char **argv )
 {
   /*                                    |--|        |-|   |-|-|                                */
   static char instr[] = "8745648184845171326578518184151512461752149647129746915414816354846454";
-  /* static char instr[] = "111111111911248124617"; */
+  /*  static char instr[] = "111111111911248124617";
+      static char instr[] = "24617";*/
   uint8_t  digits[sizeof(instr)];
   uint64_t count = 0;
   uint64_t digitIndex = 0;
