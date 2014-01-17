@@ -46,7 +46,7 @@ int analyzeDigits( uint8_t digit )
 	n--;
       }
       sdata.outbuf[sdata.outsz++] = '\n';
-      if ( sdata.outsz > sizeof( sdata.outbuf ) - 32 ) {
+      if ( sdata.outsz >= sizeof( sdata.outbuf ) - 32 ) {
 	fwrite( sdata.outbuf, sdata.outsz, 1, stdout );
 	sdata.outsz = 0;
       }
@@ -73,8 +73,9 @@ int main( int argc, char **argv )
   uint64_t count = 0;
   uint64_t digitIndex = 0;
   uint64_t inLength = sizeof( instr )-1;
-  struct state_data  sdata;
   long   i;
+
+  sdata.outsz = 0;
   
   if ( argc != 2 ) {
     fprintf( stderr, "usage:  kata5 count\n" );
