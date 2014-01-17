@@ -1,0 +1,10 @@
+lthp01:c$ rm kata5.gcda 
+lthp01:c$ cc -fprofile-generate -O2 -o kata5 kata5.c
+lthp01:c$ ./kata5 1000000 >/dev/null
+lthp01:c$ cc -fprofile-use -O2 -o kata5 kata5.c
+lthp01:c$ time ./kata5 1000000000 >/dev/null
+
+real	0m26.229s
+user	0m26.206s
+sys	0m0.016s
+lthp01:c$ 
