@@ -1,22 +1,24 @@
 module Kata.Kata (
   analyzeString,
-  addDigit,
+  hasSum0,
   hasSum
   ) where
 
 import Data.List
 
-analyzeString :: [Int] -> [[Int]]
-analyzeString s = filter (\x -> length x > 0)
-                  (snd (mapAccumL (\acc x -> hasSum acc x) [] s)) -- `using` parList rseq 
+analyzeString :: [Int] -> [Int]
+analyzeString s = let sm = hasSum0 s
+                  in
+                   case sm of
+                     Nothing -> []
+                     Just v -> (takeWhile (< v) s)++[v]
 
-addDigit :: Int -> (Int,[Int]) -> (Int,[Int])
-addDigit x (v,l) = (v+x, l++[x])
+hasSum0 :: [Int] -> Maybe Int
+hasSum0 [] = Nothing
+hasSum0 (x0:x1:l) = hasSum (x0+x1) l
 
-hasSum :: [(Int,[Int])] -> Int -> ([(Int,[Int])],[Int])
-hasSum acc x = (a,b)
-               where a=(filter (\v -> fst v < 10) (map (addDigit x) acc)) ++ [(x,[x])]
-                     b=foldl (\u v -> if (fst v) == x && length (snd v) > 1
-                                     then  (snd v)++[x]
-                                     else u) [] acc
-
+hasSum :: Int -> [Int] -> Maybe Int
+hasSum _ [] = Nothing
+hasSum i (h:l) = if i > 9 then Nothing
+                 else if i == h then Just i
+                      else hasSum (i+h) l

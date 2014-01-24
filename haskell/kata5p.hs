@@ -14,15 +14,14 @@ import Kata.Kata
 main :: IO ()
 main = do
   [cnt] <- getArgs 
-  let inStr = "8745648184845171326578518184151512461752149647129746915414816354846454"
-    -- inStr = "111111111911248124617"
-      count = read cnt
---      bufsz = read bs
-      inInts = map digitToInt inStr
+  let -- inStr = "8745648184845171326578518184151512461752149647129746915414816354846454"
+    inStr = "111111111911248124617"
+    count = read cnt
+    inInts = map digitToInt inStr
     in
    print  (length
            (filter (\x -> (not . null) x)
-            (map analyzeString ((take count . tails . cycle) inInts))
+            (parMap rpar analyzeString ((take count . tails . cycle) inInts))
            )
           )
   
