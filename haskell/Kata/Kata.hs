@@ -19,6 +19,9 @@ hasSum0 (x0:x1:l) = hasSum (x0+x1) l
 
 hasSum :: Int -> [Int] -> Maybe Int
 hasSum _ [] = Nothing
-hasSum i (h:l) = if i > 9 then Nothing
-                 else if i == h then Just i
-                      else hasSum (i+h) l
+hasSum i (h0:h1:l) = if i > 9 then Nothing
+                 else if i == h0 then
+                        if (i+h0) == h1
+                        then hasSum h1 (h1:l)
+                        else Just i
+                      else hasSum (i+h0) (h1:l)
